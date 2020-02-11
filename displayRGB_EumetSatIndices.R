@@ -4,15 +4,15 @@ rm(list=ls())
 #  contains the Projection Info Strings (Proj4Object) for GEO and LATLON
 #       PROJ_GEO    = '+proj=geos +lon_0=140.7 +h=35785863 +a=6378137.0 +b=6356752.3'
 #       PROJ_LATLON = '+proj=longlat +datum=WGS84'
-        source('~/Workspace/RainfallSpectralAnalysis/SpectralAnalysis/function_SetupForGraphics.R')
+        source('~/Himawari_Hackathon/function_SetupForGraphics.R')
 
 
 # paths to H-8 spectral data
         path2h8 = '/g/data/rr5/satellite/obs/himawari8/FLDK/'
 
 # date and time range of period of interest
-        Time = seq(ISOdatetime(2020,1,21,23,50,0,tz='GMT'),
-                   ISOdatetime(2020,1,24,0,0,0,tz='GMT'),60*10)
+        Time = seq(ISOdatetime(2020,1,20,0,0,0,tz='GMT'),
+                   ISOdatetime(2020,1,20,6,0,0,tz='GMT'),60*10)
 
 
 #
@@ -27,9 +27,10 @@ rm(list=ls())
         bt_LL = raster(crs=PROJ_LATLON,res=c(0.05,0.05),xmn=111.975,xmx=154.025,ymn=-44.025,ymx=-9.975)
 
 
-        k = 160
-#       for (k in 1:length(Time)) {
-        for (k in 155:185) {
+        #k = 160
+       for (k in 1:1) {
+       #for (k in 1:length(Time)) {
+        #for (k in 155:185) {
                 datetime = format(Time[k],'%Y%m%d%H%M00-P1S-ABOM_OBS_')
                 bandID   = 'B11'
                 bandname = 'channel_0011_brightness_temperature'
@@ -41,6 +42,46 @@ rm(list=ls())
                         b_x = t(ncvar_get(xo,bandname)); nc_close(xo)
                         b_x_rst = raster(b_x,crs=PROJ_GEO,Xmn,Xmx,Ymn,Ymx)
                         b11_rst = projectRaster(b_x_rst,bt_LL)
+                                rm(b_x,b_x_rst)
+
+                        bandID   = 'B01'
+                        bandname = 'channel_0001_scaled_radiance'
+                        filename = paste0(path2h8,format(Time[k],'%Y/%m/%d/%H%M/'),
+                                          datetime,bandID,'-PRJ_GEOS141_2000-HIMAWARI8-AHI.nc')
+                        xo  = nc_open(filename)
+                        b_x = t(ncvar_get(xo,bandname)); nc_close(xo)
+                        b_x_rst = raster(b_x,crs=PROJ_GEO,Xmn,Xmx,Ymn,Ymx)
+                        b01_rst = projectRaster(b_x_rst,bt_LL)
+                                rm(b_x,b_x_rst)
+
+                        bandID   = 'B02'
+                        bandname = 'channel_0002_scaled_radiance'
+                        filename = paste0(path2h8,format(Time[k],'%Y/%m/%d/%H%M/'),
+                                          datetime,bandID,'-PRJ_GEOS141_2000-HIMAWARI8-AHI.nc')
+                        xo  = nc_open(filename)
+                        b_x = t(ncvar_get(xo,bandname)); nc_close(xo)
+                        b_x_rst = raster(b_x,crs=PROJ_GEO,Xmn,Xmx,Ymn,Ymx)
+                        b02_rst = projectRaster(b_x_rst,bt_LL)
+                                rm(b_x,b_x_rst)
+
+                        bandID   = 'B03'
+                        bandname = 'channel_0003_scaled_radiance'
+                        filename = paste0(path2h8,format(Time[k],'%Y/%m/%d/%H%M/'),
+                                          datetime,bandID,'-PRJ_GEOS141_2000-HIMAWARI8-AHI.nc')
+                        xo  = nc_open(filename)
+                        b_x = t(ncvar_get(xo,bandname)); nc_close(xo)
+                        b_x_rst = raster(b_x,crs=PROJ_GEO,Xmn,Xmx,Ymn,Ymx)
+                        b03_rst = projectRaster(b_x_rst,bt_LL)
+                                rm(b_x,b_x_rst)
+
+                        bandID   = 'B08'
+                        bandname = 'channel_0008_brightness_temperature'
+                        filename = paste0(path2h8,format(Time[k],'%Y/%m/%d/%H%M/'),
+                                          datetime,bandID,'-PRJ_GEOS141_2000-HIMAWARI8-AHI.nc')
+                        xo  = nc_open(filename)
+                        b_x = t(ncvar_get(xo,bandname)); nc_close(xo)
+                        b_x_rst = raster(b_x,crs=PROJ_GEO,Xmn,Xmx,Ymn,Ymx)
+                        b03_rst = projectRaster(b_x_rst,bt_LL)
                                 rm(b_x,b_x_rst)
 
                         bandID   = 'B13'
@@ -73,9 +114,13 @@ rm(list=ls())
                         b15_rst = projectRaster(b_x_rst,bt_LL)
                                 rm(b_x,b_x_rst)
 
-                        Red_rst   = b15_rst - b13_rst
-                        Green_rst = b14_rst - b11_rst
-                        Blue_rst  = b13_rst
+                        #Red_rst   = b15_rst - b13_rst
+                        #Green_rst = b14_rst - b11_rst
+                        #Blue_rst  = b13_rst
+
+			Red_rst = b03_rst
+                        Green_rst = b02_rst
+                        Blue_rst  = b01_rst
 
                         # scale from 0 - 255
                         Red_rst   = ((Red_rst - Red_rst@data@min)/(Red_rst@data@max - Red_rst@data@min))*255
