@@ -5,7 +5,7 @@ module load nco
 
 YEAR=2019
 DATE=$(date -u -d $YEAR"-01-26")
-END=$(date -u -d "2019-02-08")
+END=$(date -u -d "2019-02-28")
 COUNTER=0
 while [ "$DATE" != "$END" ]; do
 	echo $DATE
@@ -17,7 +17,7 @@ while [ "$DATE" != "$END" ]; do
 			ncrename -v Band1,B$BAND B$BAND.nc
 		fi
 	done
-	echo "HIM8_"$COUNTER"_AU.nc"
+	echo "HIM8_"$COUNTER"_TWNV.nc"
 	cdo merge B8.nc B9.nc B10.nc B11.nc B12.nc B13.nc B14.nc B15.nc B16.nc BS.nc
 	cdo setdate,$(date -u +%Y-%m-%d -d "$DATE") BS.nc BD.nc
 	cdo settime,$(date -u +%H:%M:%S -d "$DATE") BD.nc "HIM8_"$COUNTER"_TWNV.nc"
@@ -25,16 +25,16 @@ while [ "$DATE" != "$END" ]; do
 	DATE=$(date -u -d "$DATE + 1 hour")
 	COUNTER=$(( $COUNTER + 1 ))
         if [ $COUNTER -gt 100 ] || [ "$DATE" == "$END" ]; then
-		cdo mergetime HIM8_*_AU.nc batch.nc
+		cdo mergetime HIM8_*_TWNV.nc batch.nc
 		if [ $? -ne 0 ]; then
     			continue
 		fi
-		rm HIM8_*_AU.nc
+		rm HIM8_*_TWNV.nc
 		if [ ! -f "HIM8_TWNV_SE_"$YEAR".nc" ]; then
-			mv batch.nc "HIM8_AU_SE_"$YEAR".nc"
+			mv batch.nc "HIM8_TWNV_SE_"$YEAR".nc"
 		else
 			mv "HIM8_TWNV_SE_"$YEAR".nc" aux.nc
-			cdo mergetime aux.nc batch.nc "HIM8_GDA94_TWNV_SE_"$YEAR".nc"
+			cdo mergetime aux.nc batch.nc "HIM8_TWNV_SE_"$YEAR".nc"
 			rm aux.nc
 			rm batch.nc
 		fi
