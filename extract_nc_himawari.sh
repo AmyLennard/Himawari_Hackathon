@@ -5,19 +5,21 @@ module load nco
 ### Set up variables for this particular run
 YEAR_START=2019
 MONTH_START=01
-DAY_START=26
+DAY_START=01
 HOUR_START=00
 DATE_START=$YEAR_START$MONTH_START$DAY_START"T"$HOUR_START"00"
+DATE_START_SECONDS=$(date -d $YEAR_START"-"$MONTH_START"-"$DAY_START" "$HOUR_START":00:00" +%s)
 
 YEAR_END=2019
-MONTH_END=01
-DAY_END=26
-HOUR_END=03
+MONTH_END=12
+DAY_END=31
+HOUR_END=23
 DATE_END=$YEAR_END$MONTH_END$DAY_END"T"$HOUR_END"00"
+DATE_END_SECONDS=$(date -d $YEAR_END"-"$MONTH_END"-"$DAY_END" "$HOUR_END":00:00" +%s)
 
 DATE_RANGE=$DATE_START"-"$DATE_END
 
-LOCATION="TWNV"
+LOCATION="QLD"
 ### end setup
 
 
@@ -25,10 +27,10 @@ DATE=$(date -u -d $YEAR_START"-"$MONTH_START"-"$DAY_START" "$HOUR_START":00:00")
 END=$(date -u -d $YEAR_END"-"$MONTH_END"-"$DAY_END" "$HOUR_END":00:00")
 COUNTER=0
 
-#if ["$DATE" > "$END"]; then
-#    echo "Start date later than end date - exiting"
-#    exit 1
-#fi
+if ["$DATE_START_SECONDS" > "$DATE_END_SECONDS"]; then
+    echo "Start date later than end date - exiting"
+    exit 1
+fi
 
 while [ "$DATE" != "$END" ]; do
 	echo $DATE
